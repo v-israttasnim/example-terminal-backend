@@ -122,13 +122,14 @@ post '/create_payment_intent' do
 
   begin
     payment_intent = Stripe::PaymentIntent.create(
-      :payment_method_types => params[:payment_method_types] || ['card_present'],
-      :capture_method => params[:capture_method] || 'automatic',
-      :amount => params[:amount],
-      :currency => params[:currency] || 'usd',
-      :description => params[:description] || 'Example PaymentIntent',
-      :payment_method_options => params[:payment_method_options] || [],
-      :receipt_email => params[:receipt_email],
+      payment_method_types: ['card_present'],
+      capture_method: 'automatic',        # ← hard-coded
+      amount: params[:amount],
+      currency: 'usd',
+      description: params[:description] || 'Example PaymentIntent',
+      # (optional) remove the next line if present in your file:
+      # payment_method_options: params[:payment_method_options] || [],
+      receipt_email: params[:receipt_email]
     )
   rescue Stripe::StripeError => e
     status 402
