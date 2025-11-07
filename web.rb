@@ -126,7 +126,7 @@ post '/create_payment_intent' do
       capture_method: 'automatic',     # force auto-capture
       amount: params[:amount],         # integer in the smallest currency unit (e.g., cents)
       currency: 'usd',
-      description: params[:description] || 'Example PaymentIntent',
+      description: 'AUTO-CAPTURE BACKEND',
       receipt_email: params[:receipt_email]
     )
   rescue Stripe::StripeError => e
