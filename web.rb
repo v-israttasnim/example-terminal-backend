@@ -123,12 +123,10 @@ post '/create_payment_intent' do
   begin
     payment_intent = Stripe::PaymentIntent.create(
       payment_method_types: ['card_present'],
-      capture_method: 'automatic',        # ← hard-coded
-      amount: params[:amount],
+      capture_method: 'automatic',     # force auto-capture
+      amount: params[:amount],         # integer in the smallest currency unit (e.g., cents)
       currency: 'usd',
       description: params[:description] || 'Example PaymentIntent',
-      # (optional) remove the next line if present in your file:
-      # payment_method_options: params[:payment_method_options] || [],
       receipt_email: params[:receipt_email]
     )
   rescue Stripe::StripeError => e
@@ -136,9 +134,15 @@ post '/create_payment_intent' do
     return log_info("Error creating PaymentIntent! #{e.message}")
   end
 
+  # success path
   log_info("PaymentIntent successfully created: #{payment_intent.id}")
   status 200
-  return {:intent => payment_intent.id, :secret => payment_intent.client_secret}.to_json
+  content_type :json
+  return {
+    intent: payment_intent.id,
+    secret: payment_intent.client_secret,
+    capture_method: payment_intent.capture_method
+  }.to_json
 end
 
 # This endpoint captures a PaymentIntent.
